@@ -19,14 +19,14 @@
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-drop function lib_mysqludf_json_info;
-drop function json_array;
-drop function json_members;
-drop function json_object;
-drop function json_values;
+DROP FUNCTION IF EXISTS lib_mysqludf_json_info;
+DROP FUNCTION IF EXISTS json_array;
+DROP FUNCTION IF EXISTS json_members;
+DROP FUNCTION IF EXISTS json_object;
+DROP FUNCTION IF EXISTS json_values;
 
-create function lib_mysqludf_json_info returns string soname 'lib_mysqludf_json.so';
-create function json_array returns string soname 'lib_mysqludf_json.so';
-create function json_members returns string soname 'lib_mysqludf_json.so';
-create function json_object returns string soname 'lib_mysqludf_json.so';
-create function json_values returns string soname 'lib_mysqludf_json.so';
+CREATE FUNCTION lib_mysqludf_json_info RETURNS STRING SONAME 'lib_mysqludf_json.so';
+CREATE FUNCTION json_array RETURNS STRING SONAME 'lib_mysqludf_json.so';
+CREATE FUNCTION json_members RETURNS STRING SONAME 'lib_mysqludf_json.so';
+CREATE FUNCTION json_object RETURNS STRING SONAME 'lib_mysqludf_json.so';
+CREATE FUNCTION json_values RETURNS STRING SONAME 'lib_mysqludf_json.so';
