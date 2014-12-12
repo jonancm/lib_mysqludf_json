@@ -1,26 +1,26 @@
-/* 
+/*
 	lib_mysqludf_json - a library of mysql udfs to map data to JSON format
-	Copyright (C) 2007  Roland Bouman 
-	web: http://www.xcdsql.org/MySQL/UDF/ 
+	Copyright (C) 2007  Roland Bouman
+	web: http://www.xcdsql.org/MySQL/UDF/
 	email: mysqludfs@gmail.com
-	
+
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Lesser General Public
 	License as published by the Free Software Foundation; either
 	version 2.1 of the License, or (at your option) any later version.
-	
+
 	This library is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 	Lesser General Public License for more details.
-	
+
 	You should have received a copy of the GNU Lesser General Public
 	License along with this library; if not, write to the Free Software
 	Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
-	
+
 */
 #if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(WIN32)
-#define DLLEXP __declspec(dllexport) 
+#define DLLEXP __declspec(dllexport)
 #else
 #define DLLEXP
 #endif
@@ -74,19 +74,19 @@ extern "C" {
 /**
  * lib_mysqludf_json_info
  */
-DLLEXP 
+DLLEXP
 my_bool lib_mysqludf_json_info_init(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *message
 );
 
-DLLEXP 
+DLLEXP
 void lib_mysqludf_json_info_deinit(
 	UDF_INIT *initid
 );
 
-DLLEXP 
+DLLEXP
 char* lib_mysqludf_json_info(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
@@ -100,19 +100,19 @@ char* lib_mysqludf_json_info(
  * 	JSON VALUES
  */
 
-DLLEXP 
+DLLEXP
 my_bool json_values_init(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *message
 );
 
-DLLEXP 
+DLLEXP
 void json_values_deinit(
 	UDF_INIT *initid
 );
 
-DLLEXP 
+DLLEXP
 char* json_values(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
@@ -126,19 +126,19 @@ char* json_values(
  * 	JSON ARRAY
  */
 
-DLLEXP 
+DLLEXP
 my_bool json_array_init(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *message
 );
 
-DLLEXP 
+DLLEXP
 void json_array_deinit(
 	UDF_INIT *initid
 );
 
-DLLEXP 
+DLLEXP
 char* json_array(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
@@ -151,19 +151,19 @@ char* json_array(
 /*
  * 	JSON OBJECT
  */
-DLLEXP 
+DLLEXP
 my_bool json_object_init(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *message
 );
 
-DLLEXP 
+DLLEXP
 void json_object_deinit(
 	UDF_INIT *initid
 );
 
-DLLEXP 
+DLLEXP
 char* json_object(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
@@ -176,19 +176,19 @@ char* json_object(
 /**
  * JSON_MEMBER
  */
-DLLEXP 
+DLLEXP
 my_bool json_members_init(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *message
 );
 
-DLLEXP 
+DLLEXP
 void json_members_deinit(
 	UDF_INIT *initid
 );
 
-DLLEXP 
+DLLEXP
 char* json_members(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
@@ -204,14 +204,14 @@ char* json_members(
 /*
  * 	JSON utilities
  */
- 
+
 
 /*
  * is_valid_json_member_name
- * 
+ *
  * -checks for a valid javascript identifier
  * -modifies qualified names to unqualified names
- * 
+ *
  */
 my_bool is_valid_json_member_name(
 	char* name				//name (identifier)			(in/out)
@@ -225,23 +225,23 @@ my_bool is_valid_json_member_name(
 		strcpy(
 			message
 		,	"Invalid json member name - name cannot be empty"
-		);		
+		);
 		(*status) = 1;
 	} else {
 //This label marks the start of checking an actual identifier
-//We distinguish between identifier start chars and identifier chars, 
+//We distinguish between identifier start chars and identifier chars,
 //so we have a special check for the first character.
 //In many cases, our expression will be a qualified column name: table.column
-//In these cases we want to return only the column name. 
+//In these cases we want to return only the column name.
 //So, when we detect the first dot in the expression text, we skip the dot
-//And reenter here to pretend the part after the dot is the actual identifier. 
-reentry:		
+//And reenter here to pretend the part after the dot is the actual identifier.
+reentry:
 		if(!	//if not a valid identifier start char
 			(	(name[i]>='A' && name[i]<='Z')
 			||	(name[i]>='a' && name[i]<='z')
 			||	 name[i]=='_'
 			||	 name[i]=='$')
-		){	
+		){
 			strcpy(
 				message
 			,	"Invalid json member name - name cannot start with '"
@@ -255,10 +255,10 @@ reentry:
 				name[j] = name[i];	//copy the first character
 			}
 			for(i++,j++; i<*length; i++,j++){
-				if(name[i] <= ' '){	//quick and dirty whitespace check - marks the end of the expression 
+				if(name[i] <= ' '){	//quick and dirty whitespace check - marks the end of the expression
 					*length = j;	//cut off the name here
 					break;
-				} else if(!	//if not an ordinary identifier char, 
+				} else if(!	//if not an ordinary identifier char,
 					(	(name[i]>='A' && name[i]<='Z')
 					||	(name[i]>='a' && name[i]<='z')
 					||	(name[i]>='0' && name[i]<='9')
@@ -266,12 +266,12 @@ reentry:
 					||	name[i]=='$')
 				) {
 					//check for dot, if we find one we are looking at a qualified name
-					//for a qualified name, we unqualify it, taking the bit beyond the dot. 
+					//for a qualified name, we unqualify it, taking the bit beyond the dot.
 					if (name[i]=='.'	//found a dot
 					&&	j==i			//and this is the first dot
 					){
 						j = 0;				//start writing at the start again
-						i++;				//look for the part beyond the dot.						
+						i++;				//look for the part beyond the dot.
 goto reentry;
 					} else {
 						// either a dot beyond the first dot or not an identifier char alltogether.
@@ -288,14 +288,14 @@ goto reentry;
 				} else {
 					if (j!=i){
 						name[j] = name[i];
-					} 
+					}
 				}
-			}			
+			}
 			*length = j;
 		}
 	}
 	return *status;
-} 
+}
 /*
  * prepare_json
  */
@@ -310,7 +310,7 @@ my_bool prepare_json(
 	unsigned int i;
 	unsigned long string_buffer_length = 0;
 	unsigned long other_buffer_length = 0;
-	
+
 	if(	type==JSON_OBJECT
 	||	type==JSON_ARRAY){
 		//add 2 for the opening and closing delimiters
@@ -327,7 +327,7 @@ my_bool prepare_json(
 				return 1;
 			}
 			//add member name, colon and comma, and enclosing double quotes
-			other_buffer_length += args->attribute_lengths[i] + 1 + 1 + 2; 
+			other_buffer_length += args->attribute_lengths[i] + 1 + 1 + 2;
 		} else if (type==JSON_ARRAY){
 			//add comma
 			other_buffer_length += 1;
@@ -353,7 +353,7 @@ my_bool prepare_json(
 				}
 			}
 			//add member name, colon and comma, and enclosing double quotes
-			other_buffer_length += args->attribute_lengths[i] + 1 + 1 + 2; 
+			other_buffer_length += args->attribute_lengths[i] + 1 + 1 + 2;
 		} else {
 			if (args->arg_type[i]==STRING_RESULT){
 				if (HAS_JSON_PREFIX(args->args[0])){
@@ -361,24 +361,24 @@ my_bool prepare_json(
 					if(args->lengths[i]<JSON_NULL_LENGTH){
 						other_buffer_length += JSON_NULL_LENGTH;
 					} else{
-						other_buffer_length += args->lengths[i]; 
-					} 
+						other_buffer_length += args->lengths[i];
+					}
 				} else {
 					arg_types_ptr[i] = args->arg_type[i];
 					if(args->lengths[i]<JSON_NULL_LENGTH){
 						other_buffer_length += JSON_NULL_LENGTH;
 					} else{
-						//string buffer length is attribute length 
+						//string buffer length is attribute length
 						//plus opening and closing delimiters.
 						//however, we need to take escapig into account
-						//in a worst case every character is escaped to a 
-						//2 character escape sequence. 
-						//So, by adding only one delimiter and multiplying 
-						//all string length at the end, we obtain the 
+						//in a worst case every character is escaped to a
+						//2 character escape sequence.
+						//So, by adding only one delimiter and multiplying
+						//all string length at the end, we obtain the
 						//maximum length for the string.
-						string_buffer_length += args->lengths[i] + 1; 
-					} 
-				}				
+						string_buffer_length += args->lengths[i] + 1;
+					}
+				}
 				/* mark as JSON */
 			} else {
 				/* copy the type */
@@ -386,16 +386,16 @@ my_bool prepare_json(
 				if(args->lengths[i]<JSON_NAN_LENGTH){
 					other_buffer_length += JSON_NAN_LENGTH;
 				} else{
-					other_buffer_length += args->lengths[i]; 
+					other_buffer_length += args->lengths[i];
 				}
 			}
 		}
 	}
 	//calculate final result length
-	*scalar_result_length_ptr = 
-		other_buffer_length 		
-	+	2 * string_buffer_length	//2 * string 
-	;  
+	*scalar_result_length_ptr =
+		other_buffer_length
+	+	2 * string_buffer_length	//2 * string
+	;
 	return 0;
 }
 my_bool json_init2(
@@ -413,7 +413,7 @@ my_bool json_init2(
 		strcpy(
 			message
 		,	"Could not allocate memory (udf: json_init)"
-		);		
+		);
 		return 1;
 	}
 	if(prepare_json(
@@ -436,9 +436,9 @@ my_bool json_init2(
 			strcpy(
 				message
 			,	"Could not allocate memory"
-			);		
+			);
 			status = 1;
-		}		
+		}
 	}
 	free(arg_types);
 	return status;
@@ -446,21 +446,21 @@ my_bool json_init2(
 
 /*
  * 	json_init
- * 
+ *
  * 	xxx_init function for json_array and json_object
- * 
- * 	The main job of this function is to allocate memory to 
+ *
+ * 	The main job of this function is to allocate memory to
  *  repeatedly render the desired JSON array or object.
- * 
+ *
  * 	This function does not check any parameters types or counts
  *  This is by design: JSON objects and arrays maybe empty,
- *  and in some rare circumstances (dynamic SQL) it may be 
+ *  and in some rare circumstances (dynamic SQL) it may be
  *  appropriate to generate empty results.
- * 
+ *
  *  NULL handling:
  * 		SQL NULL values are rendered as java script null values
  *  limitations:
- * 		dates and times are rendered as ordinary strings  
+ * 		dates and times are rendered as ordinary strings
  */
 my_bool json_init(
 	UDF_INIT *initid
@@ -469,7 +469,7 @@ my_bool json_init(
 ,	int unsigned type
 ){
 	my_bool status = 0;
-	/* 
+	/*
 	 * buffer_size: first used to calculate the fixed length buffer.
 	 * initial value 2 is computed as follows:
 	 * 	json array or object is delimited by [] and {} respectively,
@@ -479,18 +479,18 @@ my_bool json_init(
 	/*
 	 * string buffer size: used to calculate all required buffer size for
 	 * STRING_RESULT arguments. This is calculated separately, because
-	 * strings need escaping (see escape_json_string). 
-	 * and an additional calculation must be applied to the raw maximum 
+	 * strings need escaping (see escape_json_string).
+	 * and an additional calculation must be applied to the raw maximum
 	 * argument lengths in order to account for extra characters inserted
 	 * by the escaping process.
-	 */ 
+	 */
 	int unsigned string_buffer_size = 0;
-	int unsigned i; 
+	int unsigned i;
 	/*
 	 * We use arg_types in order to be able to extend the number of argument types
 	 * We need that to mark those arguments that we know are already json strings
 	 * It is important to know that, because arguments that are already json strings
-	 * should be escaped only once. 
+	 * should be escaped only once.
 	 */
 	char* arg_types = NULL;
 	if(!(arg_types = (char *)malloc(args->arg_count))){
@@ -498,7 +498,7 @@ my_bool json_init(
 		strcpy(
 			message
 		,	"Could not allocate memory (udf: json_init)"
-		);		
+		);
 		status = 1;
 	} else {
 		/* loop over all arguments */
@@ -507,7 +507,7 @@ my_bool json_init(
 		;	i < args->arg_count
 		;	i++
 			/* increment buffer size to account for the separator
-			 * members in the json array or object are separated by 
+			 * members in the json array or object are separated by
 			 * a single comma, which is why we need to add 1 byte of buffer.
 			*/
 		,	buffer_size++
@@ -542,13 +542,13 @@ my_bool json_init(
 					break;
 				}
 				/* For a json object, add length for the name + 1 + 2
-				 * the addition 1 is for the colon which separates 
+				 * the addition 1 is for the colon which separates
 				 * the member name from its value as in
-				 * 
+				 *
 				 * name:<value>
                  *
 				 * the addition 2 is to quote the member name as in
-				 * 
+				 *
 				 * "identifier":<value>
 				 */
 				buffer_size += args->attribute_lengths[i] + 1 + 2;
@@ -560,20 +560,20 @@ my_bool json_init(
 				case INT_RESULT:
 				case REAL_RESULT:
 					/*	allocate maximum length
-					 *	beware of NULL values though - length may be 0, 
+					 *	beware of NULL values though - length may be 0,
 					 *	then we need to allocate 3 to render NaN
-					 * */				
+					 * */
 					buffer_size += args->lengths[i]<JSON_NAN_LENGTH
 					?	JSON_NAN_LENGTH
 					:	args->lengths[i]
-					; 
+					;
 					break;
 				case JSON_RESULT:
-					buffer_size += args->lengths[i]; 
+					buffer_size += args->lengths[i];
 					buffer_size += args->lengths[i]<JSON_NULL_LENGTH
 					?	JSON_NULL_LENGTH
 					:	args->lengths[i]
-					; 
+					;
 					break;
 				case STRING_RESULT:
 				/* For strings, allocate the advocated maximum length
@@ -582,9 +582,9 @@ my_bool json_init(
 				 * the entire string_buffer_size is multiplied by 2 anyway.
 				 * This multiplication takes care of the fact that in a worst
 				 * case scenario, each character might be escaped by escape_json_string
-				 * The multiplicaton conveniently accounts for the closing quote character. 
+				 * The multiplicaton conveniently accounts for the closing quote character.
 				 */
-					string_buffer_size += 
+					string_buffer_size +=
 					(	args->lengths[i]<JSON_NULL_LENGTH
 					?	JSON_NULL_LENGTH
 					:	args->lengths[i]
@@ -595,9 +595,9 @@ my_bool json_init(
 		}
 		/*
 		 * status could have been changed by the call to is_valid_json_member_name
-		 * If it is 0, everything is still ok - it will be 1 when we have a bad member name. 
+		 * If it is 0, everything is still ok - it will be 1 when we have a bad member name.
 		 */
-		if (status==0){	
+		if (status==0){
 			/* Perform the actual allocation of memory */
 			if ((initid->ptr = malloc(
 				args->arg_count
@@ -608,7 +608,7 @@ my_bool json_init(
 				strcpy(
 					message
 				,	"Could not allocate memory (udf: json_init)"
-				);		
+				);
 				status = 1;
 			} else {
 				/*Copy our custom list of argument types to the beginning of our working buffer*/
@@ -630,12 +630,12 @@ my_bool json_init(
 }
 /*
  * 	json_deinit
- * 
+ *
  * 	xxx_deinit function for json_array and json_object
  */
 void json_deinit(
 	UDF_INIT *initid
-){	
+){
 	/* If we allocated memory, free it */
 	if (initid->ptr!=NULL){
 		free(initid->ptr);
@@ -645,8 +645,8 @@ void json_deinit(
 
 /*
  * 	write_json_value
- * 
- *	reusable helper function to write a single value as JSON   
+ *
+ *	reusable helper function to write a single value as JSON
  */
 void write_json_value(
 	char* value				//the value
@@ -706,12 +706,12 @@ void write_json_value(
 				break;
 			case STRING_RESULT:		//write string value
 				//add opening quote
-				*(*buffer_ptr)='"';	
-				*buffer_ptr += 1;				
-				//loop through the string to escape metacharacters 
+				*(*buffer_ptr)='"';
+				*buffer_ptr += 1;
+				//loop through the string to escape metacharacters
 				for(i=0; i<length; i++){
 					switch (value[i]){
-						case '\n':							
+						case '\n':
 							*(*buffer_ptr+1) = 'n';
 							*(*buffer_ptr)='\\';
 							*buffer_ptr+=2;
@@ -726,7 +726,7 @@ void write_json_value(
 							*(*buffer_ptr+1) = value[i];
 							*(*buffer_ptr)='\\';
 							*buffer_ptr+=2;
-							break;							
+							break;
 						default:	//by default, copy the character as is
 							*(*buffer_ptr)=value[i];
 							*buffer_ptr += 1;
@@ -752,7 +752,7 @@ char* json(
 	char* arg_types = initid->ptr;					//first args->arg_count bytes is type info
 	char* buffer = initid->ptr + args->arg_count;	//beyond type info is the buffer for the result
 	char* start = buffer;							//remember start of result buffer
-	//char** buffer_ptr = &buffer;					
+	//char** buffer_ptr = &buffer;
 
 	unsigned long i;
 	switch(type){						//add opening delimiter
@@ -774,7 +774,7 @@ char* json(
 				if((i%2)==0){
 					*buffer = '"';
 					buffer++;
-					memcpy(							
+					memcpy(
 						buffer
 					,	args->args[i]
 					,	args->lengths[i]
@@ -783,7 +783,7 @@ char* json(
 					*buffer = '"';
 					buffer++;
 					*buffer = ':';
-					buffer++;				
+					buffer++;
 					continue;
 				} else {
 					break;
@@ -792,7 +792,7 @@ char* json(
 				if(arg_types[i]!=JSON_RESULT){
 					*buffer = '"';
 					buffer++;
-					memcpy(							
+					memcpy(
 						buffer
 					,	args->attributes[i]
 					,	args->attribute_lengths[i]
@@ -816,7 +816,7 @@ char* json(
 			*buffer = ',';
 			buffer++;
 		}
-	}	
+	}
 	if (args->arg_count!=0
 	&&	type!=JSON_VALUES){
 		//adjust length, overwrite last comma.
@@ -883,7 +883,7 @@ my_bool json_values_init(
 	UDF_INIT *initid
 ,	UDF_ARGS *args
 ,	char *message
-){	
+){
 	return json_init(
 		initid
 	,	args
@@ -893,7 +893,7 @@ my_bool json_values_init(
 }
 void json_values_deinit(
 	UDF_INIT *initid
-){	
+){
 	json_deinit(
 		initid
 	);
@@ -933,7 +933,7 @@ my_bool json_array_init(
 }
 void json_array_deinit(
 	UDF_INIT *initid
-){	
+){
 	json_deinit(
 		initid
 	);
@@ -974,7 +974,7 @@ my_bool json_object_init(
 }
 void json_object_deinit(
 	UDF_INIT *initid
-){	
+){
 	json_deinit(
 		initid
 	);
@@ -1010,7 +1010,7 @@ my_bool json_members_init(
 	unsigned char* arg_types = NULL;
 	long unsigned buffer_size = 0;
 	long unsigned string_buffer_size = 0;
-	if ((args->arg_count < 2) 
+	if ((args->arg_count < 2)
 	||	(args->arg_count % 2)!=0
 	){
 		strcpy(
@@ -1025,8 +1025,8 @@ my_bool json_members_init(
 		strcpy(
 			message
 		,	"Could not allocate memory (udf: json_members_init)"
-		);		
-		status = 1;	 
+		);
+		status = 1;
 	} else {
 		/* loop over the member name arguments */
 		for (i=0; i<args->arg_count; i+=2){
@@ -1035,16 +1035,16 @@ my_bool json_members_init(
 				strcpy(
 					message
 				,	"String type required for member name (udf: json_members_init)"
-				);		
+				);
 				status = 1;
 				break;
 			} else if(args->args[i]!=NULL){
-				/* 
+				/*
 				 * if it's  a constant, check if it's avalid member name
 				 * Basically, we allow variable member names, but we won't check validity
 				 * So, it is flexible but you are on your own if it turns out to be a name
 				 * that is not a valid js identifier.
-				 * */ 
+				 * */
 				if(is_valid_json_member_name(
 					args->args[i]
 				,	&args->lengths[i]
@@ -1056,7 +1056,7 @@ my_bool json_members_init(
 			}
 			/*
 			 * Make room for the member name
-			 * 
+			 *
 			 * */
 			buffer_size += args->lengths[i];
 		}
@@ -1075,9 +1075,9 @@ my_bool json_members_init(
 							string_buffer_size += args->lengths[i] + 1;
 						}
 						break;
-					case INT_RESULT:					
-					case REAL_RESULT:					
-					case DECIMAL_RESULT:					
+					case INT_RESULT:
+					case REAL_RESULT:
+					case DECIMAL_RESULT:
 						arg_types[i]=args->arg_type[i];
 						buffer_size += args->lengths[i];
 						break;
@@ -1090,14 +1090,14 @@ my_bool json_members_init(
 			if ((initid->ptr = malloc(
 				(args->arg_count)
 			+	buffer_size
-			+	(2*string_buffer_size)		
+			+	(2*string_buffer_size)
 			))==NULL){
 				strcpy(
 					message
 				,	"Could not allocate memory (udf: json_members_init)"
-				);		
-				status = 1;	 
-			} else { 			
+				);
+				status = 1;
+			} else {
 				/*Copy our custom list of argument types to the beginning of our working buffer*/
 				memcpy(
 					initid->ptr
@@ -1106,9 +1106,9 @@ my_bool json_members_init(
 				);
 				/* Ok, out of the woods */
 			}
-		}				
+		}
 	}
-	if (arg_types!=NULL){		
+	if (arg_types!=NULL){
 		free(arg_types);
 	}
 	return status;
