@@ -56,4 +56,4 @@ if [ "$(whoami)" == "root" ]; then
 else
 	USER_COLOR="$CYAN"
 fi
-PS1="\n$MAGENTA[\D{%d %b %Y %T}]$NO_COLOR \[$USER_COLOR\]\u@\h\[$NO_COLOR\]:\[$GREEN\]\w\[$NO_COLOR\] \n→ "
+PS1="\n$MAGENTA[\D{%d %b %Y %T}]$NO_COLOR \[$USER_COLOR\]\u@\h\[$NO_COLOR\]:\[$GREEN\]\w\[$NO_COLOR\] \[$EYELLOW\]\$(vcprompt)\[$NO_COLOR\] \n→ "
