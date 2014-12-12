@@ -1,0 +1,9 @@
+" http://www.emezeta.com/articulos/manual-para-aprender-a-utilizar-vim
+" http://spf13.com/post/perfect-vimrc-vim-config-file
+
+set ts=4       " tab spacing
+set sw=4       " indent spacing
+set number     " line numbering
+syntax on      " syntax highlighting
+set cindent    " automatic indent
+set hidden     " put buffers to background (http://blog.sanctum.geek.nz/buffers-windows-tabs/)

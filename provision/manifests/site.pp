@@ -16,3 +16,5 @@ package { 'libmysqlclient-dev' : ensure => installed }
 package { 'bcpp' : ensure => installed }
 package { 'highlight' : ensure => installed }
 package { 'indent' : ensure => installed }
+
+include dotfiles
